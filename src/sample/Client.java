@@ -13,8 +13,8 @@ public class Client extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
-        primaryStage.setTitle("Hello World");
-        primaryStage.setScene(new Scene(root, 566, 448));
+        primaryStage.setTitle("Chat Client");
+        primaryStage.setScene(new Scene(root, 707, 448));
         primaryStage.show();
     }
 
