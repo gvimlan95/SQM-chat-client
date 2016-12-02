@@ -27,11 +27,11 @@ public class Controller {
     @FXML private TextField inputMessageTextField;
     @FXML private Button sendBtn;
     @FXML private ComboBox myCombobox;
+    @FXML private Button userListRefreshBtn;
     private BufferedReader in;
     private PrintWriter out;
-    Socket socket;
-    private volatile boolean isRegistered;
-    Thread t;
+    private Socket socket;
+    private Thread t;
 
 
     public void connectBtnClicked(ActionEvent event){
@@ -39,8 +39,14 @@ public class Controller {
             socket = new Socket(hostTextField.getText(), Integer.parseInt(portTextField.getText()));
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream(), true);
-            disconnectBtn.setDisable(false);
-            connectBtn.setDisable(true);
+
+//            disconnectBtn.setDisable(false);
+//            connectBtn.setDisable(true);
+//            registerBtn.setDisable(false);
+//            onlineUsersTextArea.setDisable(false);
+//            myCombobox.setDisable(false);
+//            sendBtn.setDisable(false);
+            activateGUIBtn(false);
 
         } catch (IOException e) {
             System.out.println("in or out failed");
@@ -51,25 +57,24 @@ public class Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                try {
-//                        out.println("LIST");
-//                        System.out.println(in.readLine());
-//                } catch (IOException e) {
-//                }
-//            }
-//        }).start();
     }
 
     public void disconnectBtnClicked(ActionEvent event){
             try{
-                if(socket != null) socket.close();
-                disconnectBtn.setDisable(true);
-                connectBtn.setDisable(false);
-                t.interrupt();
+                if(socket != null) {
+                    t.interrupt();
+                    out.println("QUIT");
+                    in.close();
+                    out.close();
+                    socket.close();
+                }
+//                disconnectBtn.setDisable(true);
+//                connectBtn.setDisable(false);
+                usernameTextField.setDisable(false);
+//                onlineUsersTextArea.setDisable(true);
+//                myCombobox.setDisable(true);
+//                sendBtn.setDisable(true);
+                activateGUIBtn(true);
             }
             catch(Exception e) {} // not much else I can do
 
@@ -87,13 +92,13 @@ public class Controller {
             String uname = in.readLine();
             if(uname.startsWith("REGDONE")){
                 messageTextArea.appendText(uname.substring(8)+"\n");
-                sendBtn.setDisable(false);
-                inputMessageTextField.setDisable(false);
-                isRegistered = true;
-                onlineUsersTextArea.setDisable(false);
-                registerBtn.setDisable(true);
                 startServerIncoming();
                 out.println("LIST");
+
+                inputMessageTextField.setDisable(false);
+                onlineUsersTextArea.setDisable(false);
+                registerBtn.setDisable(true);
+                usernameTextField.setDisable(true);
 
             }else{
                 messageTextArea.appendText(uname);
@@ -104,27 +109,14 @@ public class Controller {
     }
 
     private void startServerIncoming(){
-        t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (true) {
-                    try {
-                        String data = in.readLine();
-                        if (data.startsWith("BROADCAST")) {
-                            messageTextArea.appendText(data.substring(10));
-                        }else if(data.startsWith("USERLIST")){
-//                            onlineUsersTextArea.appendText(data.split(",")+"\n");
-//                            data = data.substring(9);
-                            String[] userList = data.substring(9).split(", ");
-                            populateUserDropdownMessage(userList);
-                            populateOnlineUserList(userList);
-                        } else {
-                            messageTextArea.appendText(data+"\n");
-                        }
+        t = new Thread(() -> {
+            while (!t.isInterrupted() && !socket.isClosed()) {
+                try {
+//                    String data = in.readLine();
+                    validateMessage(in.readLine());
 
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         });
@@ -133,13 +125,68 @@ public class Controller {
 
     private void populateUserDropdownMessage(String[] data){
         myCombobox.getItems().clear();
+//        myCombobox.getItems().add("HAIL");
         myCombobox.getItems().addAll(data);
     }
 
     private void populateOnlineUserList(String[] data){
-        onlineUsersTextArea.setText("");
-        for(int i =0;i<data.length;i++){
-            onlineUsersTextArea.appendText(data[i]+"\n");
+        onlineUsersTextArea.clear();
+        for (String aData : data) {
+            onlineUsersTextArea.appendText(aData + "\n");
         }
+    }
+
+    private void validateMessage(String data){
+        if (data.startsWith("BROADCAST")) {
+            messageTextArea.appendText(data.substring(10));
+        }else if(data.startsWith("USERLIST")){
+
+            String[] userList = data.substring(9).split(", ");
+
+//            ArrayList<String> userList = new ArrayList<>();
+//            for (String ul : ulist) {
+//                userList.add(ul);
+//            }
+////            for(String ul : userList){
+////                onlineUsersTextArea.appendText(ul + "\n");
+////            }
+
+            populateUserDropdownMessage(userList);
+//            populateOnlineUserList(userList);
+        } else {
+            messageTextArea.appendText(data+"\n");
+        }
+    }
+
+    public void refreshOnlineUserList(ActionEvent event){
+        out.println("LIST");
+        System.out.println("Refresh button clicked");
+    }
+
+    private void activateGUIBtn(boolean disabled){
+        // if the user successfully connected , disabled = false
+        disconnectBtn.setDisable(disabled);
+        connectBtn.setDisable(!disabled);
+        registerBtn.setDisable(disabled);
+        onlineUsersTextArea.setDisable(disabled);
+        myCombobox.setDisable(disabled);
+        sendBtn.setDisable(disabled);
+        userListRefreshBtn.setDisable(disabled);
+
+//        // if the user successfully connected, disable = true
+//        disconnectBtn.setDisable(isDisabled);
+//        connectBtn.setDisable(!isDisabled);
+//        registerBtn.setDisable(isDisabled);
+//        onlineUsersTextArea.setDisable(!isDisabled);
+//        myCombobox.setDisable();
+//        sendBtn.setDisable();
+//
+//        // if the user successfully disconnected, activate = false
+//        disconnectBtn.setDisable(true);
+//        connectBtn.setDisable(false);
+//        usernameTextField.setDisable(false);
+//        onlineUsersTextArea.setDisable(true);
+//        myCombobox.setDisable(true);
+//        sendBtn.setDisable(true);
     }
 }

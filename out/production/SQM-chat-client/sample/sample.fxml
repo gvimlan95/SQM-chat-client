@@ -19,7 +19,7 @@
       <TextField fx:id="inputMessageTextField" layoutX="139.0" layoutY="371.0" prefHeight="48.0" prefWidth="418.0" />
       <Button fx:id="sendBtn" layoutX="566.0" layoutY="373.0" mnemonicParsing="false" onAction="#sendButtonClicked" prefHeight="42.0" prefWidth="81.0" text="Send" />
       <TextArea fx:id="onlineUsersTextArea" disable="true" editable="false" layoutX="552.0" layoutY="50.0" prefHeight="312.0" prefWidth="141.0" />
-      <Label layoutX="583.0" layoutY="19.0" text="Online Users" />
+      <Label layoutX="552.0" layoutY="19.0" text="Online Users" />
       <TextField fx:id="usernameTextField" layoutX="14.0" layoutY="50.0" prefHeight="27.0" prefWidth="196.0" text="Username" />
       <ComboBox id="comboId" fx:id="myCombobox" layoutX="14.0" layoutY="381.0" prefHeight="27.0" prefWidth="125.0" promptText="Select">
          <items>
@@ -30,6 +30,7 @@
             </FXCollections>
          </items>
       </ComboBox>
-      <Button fx:id="registerBtn" layoutX="232.0" layoutY="50.0" mnemonicParsing="false" onAction="#registerUser" prefHeight="27.0" prefWidth="107.0" text="Register" />
+      <Button fx:id="registerBtn" disable="true" layoutX="232.0" layoutY="50.0" mnemonicParsing="false" onAction="#registerUser" prefHeight="27.0" prefWidth="107.0" text="Register" />
+      <Button fx:id="userListRefreshBtn" disable="true" layoutX="658.0" layoutY="14.0" mnemonicParsing="false" onAction="#refreshOnlineUserList" prefHeight="27.0" prefWidth="35.0" text="R" />
    </children>
 </AnchorPane>
