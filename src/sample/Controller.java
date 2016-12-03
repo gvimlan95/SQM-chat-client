@@ -33,19 +33,20 @@ public class Controller {
     private Socket socket;
     private Thread t;
 
+    private void sendCommandToServer(String command){
+        out.println(command);
+    }
+
+    public void refreshOnlineUserList(ActionEvent event){
+        sendCommandToServer("LIST");
+        System.out.println("Refresh button clicked");
+    }
 
     public void connectBtnClicked(ActionEvent event){
         try {
             socket = new Socket(hostTextField.getText(), Integer.parseInt(portTextField.getText()));
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream(), true);
-
-//            disconnectBtn.setDisable(false);
-//            connectBtn.setDisable(true);
-//            registerBtn.setDisable(false);
-//            onlineUsersTextArea.setDisable(false);
-//            myCombobox.setDisable(false);
-//            sendBtn.setDisable(false);
             activateGUIBtn(false);
 
         } catch (IOException e) {
@@ -53,47 +54,45 @@ public class Controller {
             System.exit(-1);
         }
         try {
-            messageTextArea.appendText(in.readLine()+"\n");
+            updateMessageTextArea(in.readLine()+"\n");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public void disconnectBtnClicked(ActionEvent event){
-            try{
-                if(socket != null) {
-                    t.interrupt();
-                    out.println("QUIT");
-                    in.close();
-                    out.close();
-                    socket.close();
-                }
-//                disconnectBtn.setDisable(true);
-//                connectBtn.setDisable(false);
-                usernameTextField.setDisable(false);
-//                onlineUsersTextArea.setDisable(true);
-//                myCombobox.setDisable(true);
-//                sendBtn.setDisable(true);
-                activateGUIBtn(true);
+        try{
+            if(socket != null) {
+                t.interrupt();
+                out.println("QUIT");
+                in.close();
+                out.close();
+                socket.close();
             }
-            catch(Exception e) {} // not much else I can do
+            usernameTextField.setDisable(false);
+            activateGUIBtn(true);
+        }
+        catch(Exception e) {} // not much else I can do
 
     }
 
     public void sendButtonClicked(ActionEvent event){
-        out.println(inputMessageTextField.getText());
+        sendCommandToServer(inputMessageTextField.getText());
         inputMessageTextField.setText("");
     }
 
     public void registerUser(ActionEvent event){
         String username = usernameTextField.getText();
-        out.println("IDEN "+username);
+//        if(!username.matches("[A-Za-z]")){
+//            username = "Anonymous";
+//        }
+        sendCommandToServer("IDEN "+username);
         try {
             String uname = in.readLine();
             if(uname.startsWith("REGDONE")){
-                messageTextArea.appendText(uname.substring(8)+"\n");
+                updateMessageTextArea(uname.substring(8)+"\n");
                 startServerIncoming();
-                out.println("LIST");
+                sendCommandToServer("LIST");
 
                 inputMessageTextField.setDisable(false);
                 onlineUsersTextArea.setDisable(false);
@@ -101,7 +100,7 @@ public class Controller {
                 usernameTextField.setDisable(true);
 
             }else{
-                messageTextArea.appendText(uname);
+                updateMessageTextArea(uname);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -112,7 +111,6 @@ public class Controller {
         t = new Thread(() -> {
             while (!t.isInterrupted() && !socket.isClosed()) {
                 try {
-//                    String data = in.readLine();
                     validateMessage(in.readLine());
 
                 } catch (IOException e) {
@@ -138,33 +136,18 @@ public class Controller {
 
     private void validateMessage(String data){
         if (data.startsWith("BROADCAST")) {
-            messageTextArea.appendText(data.substring(10));
+            updateMessageTextArea(data.substring(10));
         }else if(data.startsWith("USERLIST")){
 
             String[] userList = data.substring(9).split(", ");
-
-//            ArrayList<String> userList = new ArrayList<>();
-//            for (String ul : ulist) {
-//                userList.add(ul);
-//            }
-////            for(String ul : userList){
-////                onlineUsersTextArea.appendText(ul + "\n");
-////            }
-
             populateUserDropdownMessage(userList);
 //            populateOnlineUserList(userList);
         } else {
-            messageTextArea.appendText(data+"\n");
+            updateMessageTextArea(data+"\n");
         }
     }
 
-    public void refreshOnlineUserList(ActionEvent event){
-        out.println("LIST");
-        System.out.println("Refresh button clicked");
-    }
-
     private void activateGUIBtn(boolean disabled){
-        // if the user successfully connected , disabled = false
         disconnectBtn.setDisable(disabled);
         connectBtn.setDisable(!disabled);
         registerBtn.setDisable(disabled);
@@ -172,21 +155,9 @@ public class Controller {
         myCombobox.setDisable(disabled);
         sendBtn.setDisable(disabled);
         userListRefreshBtn.setDisable(disabled);
+    }
 
-//        // if the user successfully connected, disable = true
-//        disconnectBtn.setDisable(isDisabled);
-//        connectBtn.setDisable(!isDisabled);
-//        registerBtn.setDisable(isDisabled);
-//        onlineUsersTextArea.setDisable(!isDisabled);
-//        myCombobox.setDisable();
-//        sendBtn.setDisable();
-//
-//        // if the user successfully disconnected, activate = false
-//        disconnectBtn.setDisable(true);
-//        connectBtn.setDisable(false);
-//        usernameTextField.setDisable(false);
-//        onlineUsersTextArea.setDisable(true);
-//        myCombobox.setDisable(true);
-//        sendBtn.setDisable(true);
+    private void updateMessageTextArea(String data){
+        messageTextArea.appendText(data);
     }
 }
