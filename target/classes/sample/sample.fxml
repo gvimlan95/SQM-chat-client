@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane minHeight="448.0" minWidth="566.0" prefHeight="449.0" prefWidth="707.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+   <children>
+      <TextField fx:id="hostTextField" layoutX="14.0" layoutY="14.0" prefHeight="27.0" prefWidth="196.0" text="localhost" />
+      <TextField fx:id="portTextField" layoutX="230.0" layoutY="14.0" prefHeight="27.0" prefWidth="107.0" text="9000" />
+      <Button fx:id="connectBtn" layoutX="367.0" layoutY="14.0" mnemonicParsing="false" onAction="#connectBtnClicked" text="Connect" />
+      <Button fx:id="disconnectBtn" disable="true" layoutX="458.0" layoutY="14.0" mnemonicParsing="false" onAction="#disconnectBtnClicked" text="Disconnect" />
+      <TextArea fx:id="messageTextArea" editable="false" layoutX="14.0" layoutY="84.0" prefHeight="278.0" prefWidth="531.0" />
+      <TextField fx:id="inputMessageTextField" layoutX="139.0" layoutY="371.0" prefHeight="48.0" prefWidth="418.0" />
+      <Button fx:id="sendBtn" layoutX="566.0" layoutY="373.0" mnemonicParsing="false" onAction="#sendButtonClicked" prefHeight="42.0" prefWidth="81.0" text="Send" />
+      <TextArea fx:id="onlineUsersTextArea" disable="true" editable="false" layoutX="552.0" layoutY="50.0" prefHeight="312.0" prefWidth="141.0" />
+      <Label layoutX="552.0" layoutY="19.0" text="Online Users" />
+      <TextField fx:id="usernameTextField" layoutX="14.0" layoutY="50.0" prefHeight="27.0" prefWidth="196.0" promptText="Username" text="Username" />
+      <ComboBox id="comboId" fx:id="myCombobox" layoutX="14.0" layoutY="381.0" prefHeight="27.0" prefWidth="125.0" promptText="Select">
+         <items>
+            <FXCollections fx:factory="observableArrayList">
+               <String fx:value="Item 1" />
+               <String fx:value="Item 2" />
+               <String fx:value="Item 3" />
+            </FXCollections>
+         </items>
+      </ComboBox>
+      <Button fx:id="registerBtn" disable="true" layoutX="232.0" layoutY="50.0" mnemonicParsing="false" onAction="#registerUser" prefHeight="27.0" prefWidth="107.0" text="Register" />
+      <Button fx:id="userListRefreshBtn" disable="true" layoutX="658.0" layoutY="14.0" mnemonicParsing="false" onAction="#refreshOnlineUserList" prefHeight="27.0" prefWidth="35.0" text="R" />
+   </children>
+</AnchorPane>
