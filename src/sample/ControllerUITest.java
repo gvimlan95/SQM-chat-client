@@ -3,12 +3,10 @@ package sample;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import org.junit.Test;
 import org.loadui.testfx.GuiTest;
 import java.io.IOException;
-import static org.junit.Assert.*;
+
 import static org.loadui.testfx.Assertions.verifyThat;
 import static org.loadui.testfx.GuiTest.find;
 import static org.loadui.testfx.controls.Commons.hasText;
@@ -18,7 +16,7 @@ public class ControllerUITest extends GuiTest {
     protected Parent getRootNode() {
         Parent parent = null;
         try{
-            parent = FXMLLoader.load(getClass().getResource("sample.fxml"));
+            parent = FXMLLoader.load(getClass().getResource("MainView.fxml"));
             return parent;
         }catch(IOException e){}
         return parent;

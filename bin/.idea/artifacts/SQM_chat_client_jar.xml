@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="SQM-chat-client:jar">
+    <output-path>$PROJECT_DIR$/jar/SQM_chat_client_jar</output-path>
+    <root id="archive" name="SQM-chat-client.jar">
+      <element id="module-output" name="SQM-chat-client" />
+    </root>
+  </artifact>
+</component>

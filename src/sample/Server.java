@@ -13,25 +13,28 @@ public class Server {
     private Socket socket;
     private Thread t;
     private Controller controller;
-    public String messageFromServer;
+    public boolean isPortOpen;
 
     Server(String hostname, int port,Controller controller){
         this.controller = controller;
         try {
             socket = new Socket(hostname, port);
+            isPortOpen = true;
         } catch (IOException e) {
-            e.printStackTrace();
             System.out.println("Port is closed");
+            isPortOpen = false;
         }
     }
 
     public void serverStart(){
-        try {
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            out = new PrintWriter(socket.getOutputStream(), true);
-            startServerIncoming();
-        }catch (IOException e) {
-            validateMessage("Error: In or Out failed");
+        if(isPortOpen) {
+            try {
+                in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                out = new PrintWriter(socket.getOutputStream(), true);
+                startServerIncoming();
+            } catch (IOException e) {
+                validateMessage("Error: In or Out failed");
+            }
         }
     }
 
@@ -61,7 +64,6 @@ public class Server {
     }
 
     public void disconnectUser(){
-//        controller.activateGUIBtn(true);
         try {
             if(t != null){
                 t.interrupt();
@@ -70,8 +72,6 @@ public class Server {
             in.close();
             out.close();
             socket.close();
-//            controller.activateGUIBtn(true);
-//            validateMessage("QUIT");
         }catch(IOException e){
             System.out.println("Error");
         }

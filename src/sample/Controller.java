@@ -29,7 +29,6 @@ public class Controller {
     }
 
     public void connectBtnClicked(){
-
         server = new Server(hostTextField.getText(), Integer.parseInt(portTextField.getText()),this);
         server.serverStart();
     }
